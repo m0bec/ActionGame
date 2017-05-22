@@ -27,8 +27,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	char str[4];
 	int num = 0;
 	int error_flag = 0;
-	char str_num1[2];
-	char str_num2[3];
 	char str_num[3];
 	char str_[100] = "\0";
 	char filename[100] = "\0";
@@ -46,7 +44,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		int end;
 	};
 	Action action[100];
-	int sum;
 
 	for (int i = 0; i < 100; i++) {
 		action[i].begin = num;
@@ -92,8 +89,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//----------------------------------------------
 
 	//FPS-------------------------------------------
-	const int FPS = 60;
-	int count;
+	const int FPS = 30;
+	int count_fps = 0;
+	int start_fps;
+	int wait_fps;
 
 	int aa = LoadGraph("Rmai_graph/001 (1).bmp");
 	// グラフィックの描画先を裏画面にセット
@@ -105,6 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	{
 		// 画面を初期化(真っ黒にする)
 		ClearDrawScreen();
+		
 		//描画----------------------------------------------------
 		//printfDx("%d %d\n", action[1].begin, action[1].end);
 		DrawGraph(0, 0, gr[acnum].graph, true);
@@ -113,7 +113,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (acnum > action[0].end) {
 			acnum = action[0].begin;
 		}
+		//------------------------------------------------------------
 		
+		//FPS---------------------------------------------------------
+		Sleep(1000 / 60);
+		//------------------------------------------------------------
 
 		// 裏画面の内容を表画面にコピーする
 		ScreenFlip();
@@ -125,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		// もしＥＳＣキーが押されていたらループから抜ける
 		if (CheckHitKey(KEY_INPUT_ESCAPE)) break;
 
-		//Sleep(1000 / 60);
+		
 	}
 
 	// ＤＸライブラリ使用の終了処理
