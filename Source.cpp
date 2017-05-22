@@ -94,6 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//FPS-------------------------------------------
 	const int FPS = 60;
 	int count;
+
 	int aa = LoadGraph("Rmai_graph/001 (1).bmp");
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -104,6 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	{
 		// 画面を初期化(真っ黒にする)
 		ClearDrawScreen();
+		//描画----------------------------------------------------
 		//printfDx("%d %d\n", action[1].begin, action[1].end);
 		DrawGraph(0, 0, gr[acnum].graph, true);
 		DrawGraph(100, 100, aa, true);
