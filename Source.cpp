@@ -1,4 +1,5 @@
 #include "DxLib.h"
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -20,16 +21,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// ＤＸライブラリ初期化処理
 	if (DxLib_Init() == -1) return -1;
+
 	
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
+	
 	
 	while (1)
 	{
 		// 画面を初期化(真っ黒にする)
 		ClearDrawScreen();
-
-		
 
 
 		// 裏画面の内容を表画面にコピーする
