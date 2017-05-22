@@ -1,10 +1,8 @@
 #include "DxLib.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
+//こいつは気にしないで-----------------
+#include "ActionVar.h"
+//------------------------------------
 
-const int NORMAL = 0;
 const int GRAPH_NUM = 1759;
 struct Graph
 {
@@ -94,11 +92,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int start_fps;
 	int wait_fps;
 
-	int aa = LoadGraph("Rmai_graph/001 (1).bmp");
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
 	
-	int acnum = 0;
+	int grnum = 0;
 
 	while (1)
 	{
@@ -107,11 +104,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		
 		//描画----------------------------------------------------
 		//printfDx("%d %d\n", action[1].begin, action[1].end);
-		DrawGraph(0, 0, gr[acnum].graph, true);
-		DrawGraph(100, 100, aa, true);
-		++acnum;
-		if (acnum > action[0].end) {
-			acnum = action[0].begin;
+		DrawGraph(0, 0, gr[grnum].graph, true);
+		++grnum;
+		if (grnum > action[NORMAL].end) {
+			grnum = action[NORMAL].begin;
 		}
 		//------------------------------------------------------------
 		
