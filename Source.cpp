@@ -20,17 +20,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‰Šú‰»ˆ—
 	if (DxLib_Init() == -1) return -1;
-
-	char graph_directory[] = "Rmai_graph/";
-	Graph mai[GRAPH_NUM];
-	for (int i = 0; i < GRAPH_NUM; i++) {
-		while (true) {
-			mai[i].graph = LoadGraph("");
-			if (mai[i].graph == -1) {
-				mai[i - 1].fin_flag = false;
-			}
-		}
-	}
 	
 	const int graph_start = 1401;
 	const int graph_end = 1687;
