@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+*.wav
+/DXLib_VC
+/Debug
+/Rmai_graph
+/Rmai_snd
+*.sln
+*.filters
+*.txt
+*.vcxproj
+*.suo
+*.db
+*.ipch
