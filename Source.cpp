@@ -22,7 +22,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// ＤＸライブラリ初期化処理
 	if (DxLib_Init() == -1) return -1;
 
-	
+	const char dir[] = "Rmai_graph/";
+	const char type[] = ".bmp";
+	char str[3];
+	int num = 0;
+	char str_num1[1];
+	char str_num2[2];
+	char filename[100];
+	struct Graph
+	{
+		int graph;
+		bool flag = false;
+	};
+	Graph gr[100];
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 100; j++) {
+			sprintf(str, "%d", i);
+			if (i < 10) {
+				str[2] = str[0];
+				str[0] = '0';
+				str[1] = '0';
+			}
+			else if (i < 100) {
+				str[2] = str[1];
+				str[1] = str[0];
+				str[0] = '0';
+			}
+
+
+			filename[0] = '\0';
+			if (j < 10) {
+				sprintf(str_num1, "%d", j);
+			}
+			else {
+				sprintf(str_num2, "%d", j);
+			}
+			strcat(filename, str);
+			strcat(filename, " (");
+			strcat(filename, str_num1);
+			strcat(filename, ").bmp");
+			gr[i].graph = LoadGraph(filename);
+
+			gr[i].graph = LoadGraph(filename);
+		}
+		
+	}
+
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
 	
