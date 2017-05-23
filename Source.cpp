@@ -4,11 +4,7 @@
 //------------------------------------
 
 const int GRAPH_NUM = 1759;
-struct Graph
-{
-	int graph;
-	bool fin_flag = true;;
-};
+
 // WinMain関数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -20,6 +16,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// ＤＸライブラリ初期化処理
 	if (DxLib_Init() == -1) return -1;
 	//Loadfile-----------------------------------------
+	SetTransColor(0, 120, 141);
+
 	const char dir[] = "Rmai_graph/";
 	const char type[] = ".bmp";
 	char str[4];
@@ -31,7 +29,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	struct Graph
 	{
 		int graph;
-		bool flag = false;
+		int width, height;
+		bool loop_flag = false;
 	};
 	Graph gr[100];
 
@@ -70,11 +69,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			strcpy(str_, filename);
 			gr[num].graph = LoadGraph(filename);
 			if (gr[num].graph == -1) {
-				gr[num-1].flag = true;
 				error_flag++;
 				break;
 			}
 			else {
+				GetGraphSize(gr[num].graph, &gr[num].width, &gr[num].height);
 				num++;
 				error_flag = 0;
 			}
@@ -91,11 +90,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int count_fps = 0;
 	int start_fps;
 	int wait_fps;
+	//----------------------------------------------
+
+	//描画------------------------------------------
+	ActionType state = NORMAL;
+	bool key_push_flag = false;
+	bool no_action_flag = false;
+	bool action_flag = false;
+	bool jump_flag = false;
+	int gr_num = 0;
+	int x = 100, y = 100;
+	//----------------------------------------------
 
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
 	
-	int grnum = 0;
 
 	while (1)
 	{
@@ -103,16 +112,51 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 		
 		//描画----------------------------------------------------
-		//printfDx("%d %d\n", action[1].begin, action[1].end);
-		DrawGraph(0, 0, gr[grnum].graph, true);
-		++grnum;
-		if (grnum > action[NORMAL].end) {
-			grnum = action[NORMAL].begin;
+		if (CheckHitKey(KEY_INPUT_DOWN)) {
+			no_action_flag = false;
+			if (!key_push_flag) {
+				state = SQUAT;
+				gr_num = action[state.num].begin;
+				action_flag = true;
+				key_push_flag = true;
+			}
+		}
+		else if(CheckHitKey(KEY_INPUT_UP)){
+			no_action_flag = false;
+			if (!key_push_flag) {
+				state = JUMP;
+				gr_num = action[state.num].begin;
+				action_flag = true;
+				key_push_flag = true;
+			}
+		}
+		else if(!action_flag && !jump_flag){
+			if (!no_action_flag) {
+				state = NORMAL;
+				gr_num = action[state.num].begin;
+				no_action_flag = true;
+				key_push_flag = false;
+			}
+		}
+
+		DrawGraph(x-gr[gr_num].width/2, y-gr[gr_num].height, gr[gr_num].graph, true);
+
+		++gr_num;
+		if (state.loop) {
+			if (gr_num > action[state.num].end) {
+				gr_num = action[state.num].begin;
+			}
+		}
+		else {
+			if (gr_num > action[state.num].end) {
+				gr_num = action[state.num].end;
+				action_flag = false;
+			}
 		}
 		//------------------------------------------------------------
 		
 		//FPS---------------------------------------------------------
-		Sleep(1000 / 60);
+		Sleep(1000 / 30);
 		//------------------------------------------------------------
 
 		// 裏画面の内容を表画面にコピーする
