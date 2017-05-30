@@ -131,27 +131,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			if (CheckHitKey(KEY_INPUT_DOWN)) {
 				state = SQUAT;
 				gr_num = action[SQUAT.num].begin;
-				no_action_flag = false;
 			}
 			else if (CheckHitKey(KEY_INPUT_UP)) {
 				state = JUMP;
 				gr_num = action[JUMP.num].begin;
 				v.y = JUMP_VELO;
-				no_action_flag = false;
 			}
 			else if (CheckHitKey(KEY_INPUT_RIGHT)) {
 				state = MOVE;
 				gr_num = action[MOVE.num].begin;
 				v.x = WALK_VELO;
 				turn = false;
-				no_action_flag = false;
 			}
 			else if (CheckHitKey(KEY_INPUT_LEFT)) {
 				state = MOVE;
 				gr_num = action[MOVE.num].begin;
 				v.x = -WALK_VELO;
 				turn = true;
-				no_action_flag = false;
 			}
 
 			break;
@@ -211,37 +207,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 			break;
 		}
-		/*
-		if (CheckHitKey(KEY_INPUT_DOWN) && 
-			(state.num == NORMAL.num || state.num == SQUAT.num)) {
-			no_action_flag = false;
-			if (!key_push_flag) {
-				state = SQUAT;
-				gr_num = action[state.num].begin;
-				action_flag = true;
-				key_push_flag = true;
-			}
-		}
-		else if(CheckHitKey(KEY_INPUT_UP) && 
-			(state.num == NORMAL.num || state.num == SQUAT.num == state.num == JUMP.num)){
-			no_action_flag = false;
-			if (!key_push_flag) {
-				state = JUMP;
-				gr_num = action[state.num].begin;
-				action_flag = true;
-				key_push_flag = true;
-				v.y = 10;
-			}
-		}
-		else if(!action_flag && !jump_flag){
-			if (!no_action_flag) {
-				state = NORMAL;
-				gr_num = action[state.num].begin;
-				no_action_flag = true;
-				key_push_flag = false;
-			}
-		}
-		*/
 
 		//•`‰æ-------------------------------------------------------------------
 		if (!turn) {
