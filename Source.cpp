@@ -104,8 +104,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	//移動関連--------------------------------------
 	const int JUMP_VELO = 15;
-	const int WALK_VELO = 5;
+	const int WALK_VELO = 4;
+	const int DASH_VELO = 8;
 	const int AIR_MOVE = 3;
+	bool input_flag = false;
+	const int WAIT_TIME = 10;
+	int time = 0;
+	bool key_out_flag = false;
 	bool turn = false;
 	struct velo
 	{
@@ -114,6 +119,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	};
 	velo v = { 0, 0 };
 	int gravity = 1;
+	
 	//---------------------------------------------
 
 	// グラフィックの描画先を裏画面にセット
@@ -126,6 +132,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 		
 		//描画----------------------------------------------------
+		if (input_flag) {
+			if (time > WAIT_TIME) {
+				input_flag = false;
+				time = 0;
+			}
+			else {
+				time++;
+			}
+		}
 		switch (state.num) {
 		case NORMAL_:
 			if (CheckHitKey(KEY_INPUT_DOWN)) {
@@ -138,9 +153,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				v.y = JUMP_VELO;
 			}
 			else if (CheckHitKey(KEY_INPUT_RIGHT)) {
-				state = MOVE;
-				gr_num = action[MOVE.num].begin;
-				v.x = WALK_VELO;
+				if (key_out_flag) {
+					state = F_DASH;
+					gr_num = action[F_DASH.num].begin;
+					v.x = DASH_VELO;
+				}
+				else {
+					state = MOVE;
+					gr_num = action[MOVE.num].begin;
+					v.x = WALK_VELO;
+				}
 				turn = false;
 			}
 			else if (CheckHitKey(KEY_INPUT_LEFT)) {
@@ -149,6 +171,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				v.x = -WALK_VELO;
 				turn = true;
 			}
+			
 
 			break;
 
@@ -203,9 +226,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 			break;
 
-		case END_:
+		case F_DASH_:
 
 			break;
+
+		case B_DASH_:
+
+			break;
+
+		case STAND_GARD_:
+
+			break;
+
+		case SQUAT_GARD_:
+
+			break;
+
+		case AIR_GARD_:
+
+			break;
+
+		case SYOU_GARD_:
+
+			break;
+
+			const 
 		}
 
 		//描画-------------------------------------------------------------------

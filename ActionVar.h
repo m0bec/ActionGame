@@ -7,13 +7,6 @@ struct ActionType
 const int LOOP = 0;
 const int FINISH = 1;
 const int KEEP = 2;
-const int DOWN_ = 10;
-const int F_DASH_ = 4;
-const int B_DASH_ = 5;
-const int STAND_GARD_ = 6;
-const int SQUAT_GARD_ = 7;
-const int AIR_GARD_ = 8;
-const int SYOU_GARD_ = 9;
 
 const ActionType NORMAL = { 0,LOOP };
 const ActionType SQUAT = { 1,KEEP };
@@ -31,7 +24,12 @@ const int NORMAL_ = 0;
 const int SQUAT_ = 1;
 const int MOVE_ = 2;
 const int JUMP_ = 3;
-const int END_ = 4;
-const int FALL_ = 5;
+const int F_DASH_ = 4;
+const int B_DASH_ = 5;
+const int STAND_GARD_ = 6;
+const int SQUAT_GARD_ = 7;
+const int AIR_GARD_ = 8;
+const int SYOU_GARD_ = 9;
+const int DOWN_ = 10;
 
 const int GRAUND = 300;
