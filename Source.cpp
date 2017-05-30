@@ -99,8 +99,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	bool action_flag = false;
 	bool jump_flag = false;
 	int gr_num = 0;
-	int x = 100, y = 100;
+	int x = 100, y = 300;
 	//----------------------------------------------
+
+	//移動関連--------------------------------------
+	struct velo
+	{
+		int x;
+		int y;
+	};
+	velo v = { 0, 0 };
+	int gravity = 1;
+	//---------------------------------------------
 
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -112,7 +122,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 		
 		//描画----------------------------------------------------
-		if (CheckHitKey(KEY_INPUT_DOWN)) {
+		switch (state.num) {
+		case NORMAL.num:
+
+			break;
+
+		}
+		if (CheckHitKey(KEY_INPUT_DOWN) && 
+			(state.num == NORMAL.num || state.num == SQUAT.num)) {
 			no_action_flag = false;
 			if (!key_push_flag) {
 				state = SQUAT;
@@ -121,13 +138,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				key_push_flag = true;
 			}
 		}
-		else if(CheckHitKey(KEY_INPUT_UP)){
+		else if(CheckHitKey(KEY_INPUT_UP) && 
+			(state.num == NORMAL.num || state.num == SQUAT.num == state.num == JUMP.num)){
 			no_action_flag = false;
 			if (!key_push_flag) {
 				state = JUMP;
 				gr_num = action[state.num].begin;
 				action_flag = true;
 				key_push_flag = true;
+				v.y = 10;
 			}
 		}
 		else if(!action_flag && !jump_flag){
@@ -139,7 +158,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 		}
 
+		//座標-------------------------------------------------------------------
 		DrawGraph(x-gr[gr_num].width/2, y-gr[gr_num].height, gr[gr_num].graph, true);
+		//------------------------------------------------------------------------
 
 		++gr_num;
 		if (state.loop) {
@@ -155,6 +176,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		//------------------------------------------------------------
 		
+		//移動--------------------------------------------------------
+		x += v.x;
+		y -= v.y;
+		if (y < GRAUND) {
+			v.y -= gravity;
+		}
+		else {
+			y = GRAUND;
+			v.y = 0;
+		}
+		printfDx("%d", y);
+		//------------------------------------------------------------
+
 		//FPS---------------------------------------------------------
 		Sleep(1000 / 30);
 		//------------------------------------------------------------
