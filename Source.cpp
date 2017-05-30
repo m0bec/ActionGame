@@ -107,7 +107,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	const int WALK_VELO = 4;
 	const int DASH_VELO = 8;
 	const int AIR_MOVE = 3;
-	bool input_flag = false;
 	const int WAIT_TIME = 10;
 	int time = 0;
 	bool key_out_flag = false;
@@ -132,15 +131,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 		
 		//•`‰æ----------------------------------------------------
-		if (input_flag) {
+		if (key_out_flag) {
 			if (time > WAIT_TIME) {
-				input_flag = false;
+				key_out_flag = false;
 				time = 0;
 			}
 			else {
 				time++;
 			}
 		}
+
 		switch (state.num) {
 		case NORMAL_:
 			if (CheckHitKey(KEY_INPUT_DOWN)) {
@@ -157,6 +157,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					state = F_DASH;
 					gr_num = action[F_DASH.num].begin;
 					v.x = DASH_VELO;
+					time = 0;
+					key_out_flag = false;
 				}
 				else {
 					state = MOVE;
@@ -205,6 +207,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				gr_num = action[NORMAL.num].begin;
 				v.x = 0;
 			}
+
+			if (!CheckHitKeyAll()) {
+				key_out_flag = true;
+			}
+
 			break;
 
 		case JUMP_:
@@ -227,7 +234,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			break;
 
 		case F_DASH_:
-
+			if (CheckHitKey(KEY_INPUT_RIGHT)) {
+				turn = false;
+				v.x = DASH_VELO;
+			}
+			else {
+				state = NORMAL;
+				gr_num = action[NORMAL.num].begin;
+				v.x = 0;
+			}
 			break;
 
 		case B_DASH_:
@@ -249,8 +264,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		case SYOU_GARD_:
 
 			break;
-
-			const 
 		}
 
 		//•`‰æ-------------------------------------------------------------------
