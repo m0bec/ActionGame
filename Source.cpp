@@ -101,11 +101,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//----------------------------------------------
 
 	//ˆÚ“®ŠÖ˜A--------------------------------------
+	char input_buf[256];
+
 	const int JUMP_VELO = 15;
 	const int WALK_VELO = 4;
 	const int DASH_VELO = 8;
 	const int AIR_MOVE = 3;
 	const int WAIT_TIME = 5;
+	const int FALL_VELO = 1;
 	int time = 0;
 	int key_out_flag = NORMAL_;
 	bool memo_turn = false;
@@ -130,6 +133,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();
 		
 		//stateŠÇ—----------------------------------------------------
+		GetHitKeyStateAll(input_buf);
+
 		if (key_out_flag != NORMAL_) {
 			if (time > WAIT_TIME) {
 				key_out_flag = NORMAL_;
@@ -143,13 +148,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		switch (state.num) {
 		case NORMAL_:
-			if (CheckHitKey(KEY_INPUT_DOWN)) {
-				if (CheckHitKey(KEY_INPUT_Z)) {
+			if (input_buf[KEY_INPUT_DOWN] == 1) {
+				if (input_buf[KEY_INPUT_Z] == 1) {
 					state = DW_JAB;
 					gr_num = action[DW_JAB.num].begin;
 					action_flag = ACTION_DWJAB;
 				}
-				else if (CheckHitKey(KEY_INPUT_X)) {
+				else if (input_buf[KEY_INPUT_X] == 1) {
 					state = DS_ATTACK;
 					gr_num = action[DS_ATTACK.num].begin;
 					action_flag = ACTION_DSATTACK;
@@ -159,20 +164,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					gr_num = action[SQUAT.num].begin;
 				}
 			}
-			else if (CheckHitKey(KEY_INPUT_UP)) {
+			else if (input_buf[KEY_INPUT_UP] == 1) {
 				state = JUMP;
 				gr_num = action[JUMP.num].begin;
 				v.y = JUMP_VELO;
 			}
-			else if (CheckHitKey(KEY_INPUT_RIGHT)) {
+			else if (input_buf[KEY_INPUT_RIGHT] == 1) {
 				turn = false;
 
-				if (CheckHitKey(KEY_INPUT_Z)) {
+				if (input_buf[KEY_INPUT_Z] == 1) {
 					state = W_JAB;
 					gr_num = action[W_JAB.num].begin;
 					action_flag = ACTION_WJAB;
 				}
-				else if (CheckHitKey(KEY_INPUT_X)) {
+				else if (input_buf[KEY_INPUT_X] == 1) {
 					state = WS_ATTACK;
 					gr_num = action[WS_ATTACK.num].begin;
 					action_flag = ACTION_WSATTACK;
@@ -190,15 +195,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					v.x = WALK_VELO;
 				}
 			}
-			else if (CheckHitKey(KEY_INPUT_LEFT)) {
+			else if (input_buf[KEY_INPUT_LEFT] == 1) {
 				turn = true;
 
-				if (CheckHitKey(KEY_INPUT_Z)) {
+				if (input_buf[KEY_INPUT_Z] == 1) {
 					state = W_JAB;
 					gr_num = action[W_JAB.num].begin;
 					action_flag = ACTION_WJAB;
 				}
-				else if (CheckHitKey(KEY_INPUT_X)) {
+				else if (input_buf[KEY_INPUT_X] == 1) {
 					state = WS_ATTACK;
 					gr_num = action[WS_ATTACK.num].begin;
 					action_flag = ACTION_WSATTACK;
@@ -216,15 +221,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					v.x = -WALK_VELO;
 				}
 			}
-			else if (CheckHitKey(KEY_INPUT_A)) {
+			else if (input_buf[KEY_INPUT_A] == 1) {
 				state = STAND_GARD;
 				gr_num = action[STAND_GARD.num].begin;
 			}
-			else if (CheckHitKey(KEY_INPUT_Z)) {
+			else if (input_buf[KEY_INPUT_Z] == 1) {
 				state = JAB;
 				gr_num = action[JAB.num].begin;
 				action_flag = ACTION_JAB;
-			}else if (CheckHitKey(KEY_INPUT_X)) {
+			}else if (input_buf[KEY_INPUT_X] == 1) {
 				state = S_ATTACK;
 				gr_num = action[S_ATTACK.num].begin;
 				action_flag = ACTION_SATTACK;
@@ -234,9 +239,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			break;
 
 		case SQUAT_:
-			if (gr_num == action[SQUAT_].end) {
-				if (!CheckHitKey(KEY_INPUT_DOWN)) {
-					if (CheckHitKey(KEY_INPUT_UP))
+			
+			if (!input_buf[KEY_INPUT_DOWN] == 1) {
+					if (input_buf[KEY_INPUT_UP] == 1)
 					{
 						state = JUMP;
 						gr_num = action[JUMP.num].begin;
@@ -246,43 +251,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 						gr_num = action[NORMAL.num].begin;
 					}
 				}
-				else {
-					if (CheckHitKey(KEY_INPUT_A)) {
-						state = SQUAT_GARD;
-						gr_num = action[SQUAT_GARD.num].end;
-					}
-					else if (CheckHitKey(KEY_INPUT_Z)) {
-						state = DW_JAB;
-						gr_num = action[DW_JAB.num].begin;
-						action_flag = ACTION_DWJAB;
-					}
-					else if (CheckHitKey(KEY_INPUT_X)) {
-						state = DS_ATTACK;
-						gr_num = action[DS_ATTACK.num].begin;
-						action_flag = ACTION_DSATTACK;
-					}
+			else {
+				if (input_buf[KEY_INPUT_A] == 1) {
+					state = SQUAT_GARD;
+					gr_num = action[SQUAT_GARD.num].end;
+				}
+				else if (input_buf[KEY_INPUT_Z] == 1) {
+					state = DW_JAB;
+					gr_num = action[DW_JAB.num].begin;
+					action_flag = ACTION_DWJAB;
+				}
+				else if (input_buf[KEY_INPUT_X] == 1) {
+					state = DS_ATTACK;
+					gr_num = action[DS_ATTACK.num].begin;
+					action_flag = ACTION_DSATTACK;
 				}
 			}
+			
 			break;
 
 		case MOVE_:
-			if (CheckHitKey(KEY_INPUT_Z)) {
+			if (input_buf[KEY_INPUT_Z] == 1) {
 				state = W_JAB;
 				gr_num = action[W_JAB.num].begin;
 				v.x = 0;
 				action_flag = ACTION_WJAB;
 			}
-			else if (CheckHitKey(KEY_INPUT_X)) {
+			else if (input_buf[KEY_INPUT_X] == 1) {
 				state = WS_ATTACK;
 				gr_num = action[WS_ATTACK.num].begin;
 				v.x = 0;
 				action_flag = ACTION_WSATTACK;
 			}
-			else if (CheckHitKey(KEY_INPUT_LEFT)) {
+			else if (input_buf[KEY_INPUT_LEFT] == 1) {
 				v.x = -WALK_VELO;
 				turn = true;
 			}
-			else if (CheckHitKey(KEY_INPUT_RIGHT)) {
+			else if (input_buf[KEY_INPUT_RIGHT] == 1) {
 				v.x = WALK_VELO;
 				turn = false;
 				
@@ -307,35 +312,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 
 			v.x = 0;
-
-			if (CheckHitKey(KEY_INPUT_RIGHT)) {
+			if (v.y >= 0 && action[NORMAL.num].begin+4 == gr_num) {
+				gr_num = action[NORMAL.num].begin+4;
+			}
+			if (input_buf[KEY_INPUT_RIGHT] == 1) {
 				turn = false;
 				v.x = AIR_MOVE;
 			}
-			else if (CheckHitKey(KEY_INPUT_LEFT)) {
+			else if (input_buf[KEY_INPUT_LEFT] == 1) {
 				turn = true;
 				v.x = -AIR_MOVE;
 			}
-			else if (CheckHitKey(KEY_INPUT_A)) {
+			else if (input_buf[KEY_INPUT_DOWN] == 1) {
+				v.y -= FALL_VELO;
+			}
+			if (input_buf[KEY_INPUT_A] == 1) {
 				state = AIR_GARD;
 				gr_num = action[AIR_GARD.num].begin;
 				v.x = 0;
+			}
+			else if (input_buf[KEY_INPUT_Z] == 1) {
+				state = JW_JAB;
+				gr_num = action[JW_JAB.num].begin;
+				action_flag = ACTION_JWJAB;
+			}
+			else if (input_buf[KEY_INPUT_X] == 1) {
+				state = JS_ATTACK;
+				gr_num = action[JS_ATTACK.num].begin;
+				action_flag = ACTION_JSATTACK;
 			}
 
 			break;
 
 		case F_DASH_:
-			if (CheckHitKey(KEY_INPUT_X)) {
+			if (input_buf[KEY_INPUT_X] == 1) {
 				state = WS_ATTACK;
 				gr_num = action[WS_ATTACK.num].begin;
 				v.x = 0;
 				action_flag = ACTION_WSATTACK;
 			}
-			else if (CheckHitKey(KEY_INPUT_RIGHT) && !turn) {
+			else if (input_buf[KEY_INPUT_RIGHT] == 1 && !turn) {
 				turn = false;
 				v.x = DASH_VELO;
 			}
-			else if (CheckHitKey(KEY_INPUT_LEFT) && turn) {
+			else if (input_buf[KEY_INPUT_LEFT] == 1 && turn) {
 				turn = true;
 				v.x = -DASH_VELO;
 			}
@@ -352,12 +372,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		case STAND_GARD_:
 			if (gr_num == action[STAND_GARD.num].end) {
-				if (CheckHitKey(KEY_INPUT_DOWN)) {
+				if (input_buf[KEY_INPUT_DOWN] == 1) {
 					state = SQUAT_GARD;
 					gr_num = action[SQUAT_GARD.num].begin;
 				}
 				else {
-					if (!CheckHitKey(KEY_INPUT_A)) {
+					if (!input_buf[KEY_INPUT_A] == 1) {
 						state = NORMAL;
 						gr_num = action[NORMAL.num].begin;
 					}
@@ -367,8 +387,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		case SQUAT_GARD_:
 			if (gr_num == action[SQUAT_GARD.num].end) {
-				if (CheckHitKey(KEY_INPUT_A)) {
-					if (CheckHitKey(KEY_INPUT_DOWN)) {
+				if (input_buf[KEY_INPUT_A] == 1) {
+					if (input_buf[KEY_INPUT_DOWN] == 1) {
 						state = SQUAT_GARD;
 					}
 					else {
@@ -437,14 +457,81 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 
 			break;
+
+		case JW_JAB_:
+			if (y < GRAUND) {
+				if (action_flag == ACTION_NORMAL) {
+					state = JUMP;
+					gr_num = action[JUMP.num].end;
+				}
+				else if (input_buf[KEY_INPUT_RIGHT] == 1) {
+					turn = false;
+					v.x = AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_LEFT] == 1) {
+					turn = true;
+					v.x = -AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_DOWN] == 1) {
+					v.y -= FALL_VELO;
+				}
+			}
+			else {
+				state = NORMAL;
+				gr_num = action[NORMAL.num].end;
+				action_flag = ACTION_NORMAL;
+				v.x = 0;
+			}
+
+			break;
+
+		case JS_ATTACK_:
+			if (y < GRAUND) {
+				if (action_flag == ACTION_NORMAL) {
+					state = JUMP;
+					gr_num = action[JUMP.num].end;
+				}
+				else if (input_buf[KEY_INPUT_RIGHT] == 1) {
+					turn = false;
+					v.x = AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_LEFT] == 1) {
+					turn = true;
+					v.x = -AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_DOWN] == 1) {
+					v.y -= FALL_VELO;
+				}
+			}
+			else {
+				state = NORMAL;
+				gr_num = action[NORMAL.num].end;
+				action_flag = ACTION_NORMAL;
+				v.x = 0;
+			}
+
+			break;
 		}
+		//“G---------------------------------------------------------------------
+
+		//-----------------------------------------------------------------------
 
 		//•`‰æ-------------------------------------------------------------------
-		if (!turn) {
-			DrawGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
+		if (state.gr_type == LEG) {
+			if (!turn) {
+				DrawGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
+			}
+			else {
+				DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
+			}
 		}
-		else {
-			DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
+		else if (state.gr_type == HEAD) {
+			if (!turn) {
+				DrawGraph(x - gr[gr_num].width / 2, y - gr[JUMP.num].height, gr[gr_num].graph, true);
+			}
+			else {
+				DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[JUMP.num].height, gr[gr_num].graph, true);
+			}
 		}
 		//------------------------------------------------------------------------
 
@@ -498,7 +585,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (ProcessMessage() < 0) break;
 
 		// ‚à‚µ‚d‚r‚bƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚½‚çƒ‹[ƒv‚©‚ç”²‚¯‚é
-		if (CheckHitKey(KEY_INPUT_ESCAPE)) break;
+		if (input_buf[KEY_INPUT_ESCAPE]) break;
 
 		
 	}
