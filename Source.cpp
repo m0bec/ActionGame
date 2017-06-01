@@ -85,6 +85,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	//----------------------------------------------
 
+	//enemyのロード----------------------------------
+	struct Enemy
+	{
+		int x, y;
+		int gr;
+		int life;
+		int width, height;
+	};
+	const int ENEMY_VELO = 2;
+	Enemy enemy;
+	enemy = { 600, GRAUND, LoadGraph("Enemy/Enemy1.png"), 10 };
+	GetGraphSize(enemy.gr, &enemy.width, &enemy.height);
+	//----------------------------------------------
+
+
 	//FPS-------------------------------------------
 	const int FPS = 2;
 	int count_fps = 0;
@@ -111,6 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	const int FALL_VELO = 1;
 	int time = 0;
 	int key_out_flag = NORMAL_;
+	bool dash_jump_flag = false;
 	bool memo_turn = false;
 	bool turn = false;
 	struct velo
@@ -283,6 +299,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				v.x = 0;
 				action_flag = ACTION_WSATTACK;
 			}
+			else if (input_buf[KEY_INPUT_UP] == 1) {
+				state = JUMP;
+				gr_num = action[JUMP.num].begin;
+				v.y = JUMP_VELO;
+			}
 			else if (input_buf[KEY_INPUT_LEFT] == 1) {
 				v.x = -WALK_VELO;
 				turn = true;
@@ -296,8 +317,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				state = NORMAL;
 				gr_num = action[NORMAL.num].begin;
 				v.x = 0;
+				dash_jump_flag = false;
 			}
 
+
+			//ダッシュ受付
 			if (CheckHitKeyAll() == 0) {
 				key_out_flag = MOVE_;
 				memo_turn = turn;
@@ -311,35 +335,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				gr_num = action[NORMAL.num].begin;
 			}
 
-			v.x = 0;
-			if (v.y >= 0 && action[NORMAL.num].begin+4 == gr_num) {
-				gr_num = action[NORMAL.num].begin+4;
-			}
-			if (input_buf[KEY_INPUT_RIGHT] == 1) {
-				turn = false;
-				v.x = AIR_MOVE;
-			}
-			else if (input_buf[KEY_INPUT_LEFT] == 1) {
-				turn = true;
-				v.x = -AIR_MOVE;
-			}
-			else if (input_buf[KEY_INPUT_DOWN] == 1) {
-				v.y -= FALL_VELO;
-			}
-			if (input_buf[KEY_INPUT_A] == 1) {
-				state = AIR_GARD;
-				gr_num = action[AIR_GARD.num].begin;
+			if (!dash_jump_flag) {
 				v.x = 0;
+				if (v.y >= 0 && action[NORMAL.num].begin + 4 == gr_num) {
+					gr_num = action[NORMAL.num].begin + 4;
+				}
+				if (input_buf[KEY_INPUT_RIGHT] == 1) {
+					turn = false;
+					v.x = AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_LEFT] == 1) {
+					turn = true;
+					v.x = -AIR_MOVE;
+				}
+				else if (input_buf[KEY_INPUT_DOWN] == 1) {
+					v.y -= FALL_VELO;
+				}
 			}
-			else if (input_buf[KEY_INPUT_Z] == 1) {
-				state = JW_JAB;
-				gr_num = action[JW_JAB.num].begin;
-				action_flag = ACTION_JWJAB;
-			}
-			else if (input_buf[KEY_INPUT_X] == 1) {
-				state = JS_ATTACK;
-				gr_num = action[JS_ATTACK.num].begin;
-				action_flag = ACTION_JSATTACK;
+			else {
+				if (input_buf[KEY_INPUT_A] == 1) {
+					state = AIR_GARD;
+					gr_num = action[AIR_GARD.num].begin;
+					v.x = 0;
+				}
+				else if (input_buf[KEY_INPUT_Z] == 1) {
+					state = JW_JAB;
+					gr_num = action[JW_JAB.num].begin;
+					action_flag = ACTION_JWJAB;
+				}
+				else if (input_buf[KEY_INPUT_X] == 1) {
+					state = JS_ATTACK;
+					gr_num = action[JS_ATTACK.num].begin;
+					action_flag = ACTION_JSATTACK;
+				}
 			}
 
 			break;
@@ -350,6 +378,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				gr_num = action[WS_ATTACK.num].begin;
 				v.x = 0;
 				action_flag = ACTION_WSATTACK;
+			}else if (input_buf[KEY_INPUT_UP] == 1) {
+				state = JUMP;
+				gr_num = action[JUMP.num].begin;
+				v.y = JUMP_VELO;
+				dash_jump_flag = true;
 			}
 			else if (input_buf[KEY_INPUT_RIGHT] == 1 && !turn) {
 				turn = false;
@@ -369,7 +402,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		case B_DASH_:
 
 			break;
-
+			
 		case STAND_GARD_:
 			if (gr_num == action[STAND_GARD.num].end) {
 				if (input_buf[KEY_INPUT_DOWN] == 1) {
@@ -481,6 +514,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				gr_num = action[NORMAL.num].end;
 				action_flag = ACTION_NORMAL;
 				v.x = 0;
+				dash_jump_flag = false;
 			}
 
 			break;
@@ -508,13 +542,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				gr_num = action[NORMAL.num].end;
 				action_flag = ACTION_NORMAL;
 				v.x = 0;
+				dash_jump_flag = false;
 			}
 
 			break;
 		}
-		//敵---------------------------------------------------------------------
 
-		//-----------------------------------------------------------------------
+		
 
 		//描画-------------------------------------------------------------------
 		if (state.gr_type == LEG) {
@@ -532,6 +566,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			else {
 				DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[JUMP.num].height, gr[gr_num].graph, true);
 			}
+		}
+
+		//敵
+		if (enemy.life > 0) {
+			DrawGraph(enemy.x - enemy.width / 2, enemy.y - enemy.height, enemy.gr, true);
 		}
 		//------------------------------------------------------------------------
 
@@ -553,7 +592,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					gr_num = action[state.num].end;
 				}
 			}
-			//------------------------------------------------------------
 
 			//移動--------------------------------------------------------
 			x += v.x;
@@ -566,6 +604,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				v.y = 0;
 			}
 
+			//敵の動き------------------------------------------------------------------
+			if (enemy.life > 0) {
+				if (enemy.x <= x) {
+					enemy.x += ENEMY_VELO;
+				}
+				else {
+					enemy.x -= ENEMY_VELO;
+				}
+			}
+			//-----------------------------------------------------------------------
+
 			//------------------------------------------------------------
 
 			count_fps = 0;
@@ -574,8 +623,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			count_fps++;
 		}
 
-		//FPS---------------------------------------------------------
-		//------------------------------------------------------------
 
 		// 裏画面の内容を表画面にコピーする
 		ScreenFlip();
