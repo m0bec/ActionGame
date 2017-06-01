@@ -60,4 +60,9 @@ const int ACTION_DSATTACK = 6;
 const int ACTION_JWJAB = 7;
 const int ACTION_JSATTACK = 8;
 
+const int ATTACK = 0;
+const int GARD = 1;
+const int BODY = 2;
+const int NONE = 3;
+
 const int GRAUND = 300;

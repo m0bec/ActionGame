@@ -18,6 +18,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//Loadfile-----------------------------------------
 	SetTransColor(0, 120, 141);
 
+	struct BOX
+	{
+		int lx, rx;
+		int hy, ly;
+		int type = NONE;
+		bool flag = true;
+	};
+
 	const char dir[] = "Rmai_graph/";
 	const char type[] = ".bmp";
 	char str[4];
@@ -31,6 +39,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		int graph;
 		int width, height;
 		bool loop_flag = false;
+		BOX box;
+		BOX attack;
 	};
 	Graph gr[100];
 
@@ -74,6 +84,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 			else {
 				GetGraphSize(gr[num].graph, &gr[num].width, &gr[num].height);
+				gr[num].box.type = BODY;
+				gr[num].box.lx = 0;
+				gr[num].box.rx = gr[num].width;
+				gr[num].box.hy = 0;
+				gr[num].box.ly = gr[num].height;
 				num++;
 				error_flag = 0;
 			}
@@ -94,6 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		int width, height;
 	};
 	const int ENEMY_VELO = 2;
+	int etx, ety;
 	Enemy enemy;
 	enemy = { 600, GRAUND, LoadGraph("Enemy/Enemy1.png"), 10 };
 	GetGraphSize(enemy.gr, &enemy.width, &enemy.height);
@@ -113,6 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	bool jump_flag = false;
 	int gr_num = 0;
 	int x = 100, y = 300;
+	int tx, ty;
 	//----------------------------------------------
 
 	//移動関連--------------------------------------
@@ -138,6 +155,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int gravity = 1;
 	
 	//---------------------------------------------
+
+	//あたり判定-------------------------------------
+	
+	BOX Benemy = {0, enemy.width, 0, enemy.height, BODY};
+	//----------------------------------------------
 
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -245,7 +267,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				state = JAB;
 				gr_num = action[JAB.num].begin;
 				action_flag = ACTION_JAB;
-			}else if (input_buf[KEY_INPUT_X] == 1) {
+			}
+			else if (input_buf[KEY_INPUT_X] == 1) {
 				state = S_ATTACK;
 				gr_num = action[S_ATTACK.num].begin;
 				action_flag = ACTION_SATTACK;
@@ -333,13 +356,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			if (y >= GRAUND) {
 				state = NORMAL;
 				gr_num = action[NORMAL.num].begin;
+				v.x = 0;
 			}
 
+			if (v.y >= 0 && action[NORMAL.num].begin + 4 == gr_num) {
+				gr_num = action[NORMAL.num].begin + 4;
+			}
 			if (!dash_jump_flag) {
 				v.x = 0;
-				if (v.y >= 0 && action[NORMAL.num].begin + 4 == gr_num) {
-					gr_num = action[NORMAL.num].begin + 4;
-				}
 				if (input_buf[KEY_INPUT_RIGHT] == 1) {
 					turn = false;
 					v.x = AIR_MOVE;
@@ -352,22 +376,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					v.y -= FALL_VELO;
 				}
 			}
-			else {
-				if (input_buf[KEY_INPUT_A] == 1) {
-					state = AIR_GARD;
-					gr_num = action[AIR_GARD.num].begin;
-					v.x = 0;
-				}
-				else if (input_buf[KEY_INPUT_Z] == 1) {
-					state = JW_JAB;
-					gr_num = action[JW_JAB.num].begin;
-					action_flag = ACTION_JWJAB;
-				}
-				else if (input_buf[KEY_INPUT_X] == 1) {
-					state = JS_ATTACK;
-					gr_num = action[JS_ATTACK.num].begin;
-					action_flag = ACTION_JSATTACK;
-				}
+			if (input_buf[KEY_INPUT_A] == 1) {
+				state = AIR_GARD;
+				gr_num = action[AIR_GARD.num].begin;
+				v.x = 0;
+			}
+			else if (input_buf[KEY_INPUT_Z] == 1) {
+				state = JW_JAB;
+				gr_num = action[JW_JAB.num].begin;
+				action_flag = ACTION_JWJAB;
+			}
+			else if (input_buf[KEY_INPUT_X] == 1) {
+				state = JS_ATTACK;
+				gr_num = action[JS_ATTACK.num].begin;
+				action_flag = ACTION_JSATTACK;
 			}
 
 			break;
@@ -552,27 +574,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		//描画-------------------------------------------------------------------
 		if (state.gr_type == LEG) {
-			if (!turn) {
-				DrawGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
-			}
-			else {
-				DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[gr_num].height, gr[gr_num].graph, true);
-			}
+			tx = x - gr[gr_num].width / 2;
+			ty = y - gr[gr_num].height;
+			
 		}
 		else if (state.gr_type == HEAD) {
-			if (!turn) {
-				DrawGraph(x - gr[gr_num].width / 2, y - gr[JUMP.num].height, gr[gr_num].graph, true);
-			}
-			else {
-				DrawTurnGraph(x - gr[gr_num].width / 2, y - gr[JUMP.num].height, gr[gr_num].graph, true);
-			}
+			tx = x - gr[gr_num].width / 2;
+			ty = y - gr[JUMP.num].height;
 		}
 
+		if (!turn) {
+			DrawGraph(tx, ty, gr[gr_num].graph, true);
+			DrawBox(tx + gr[gr_num].box.lx, ty + gr[gr_num].box.hy, tx + gr[gr_num].box.rx, ty + gr[gr_num].box.ly,
+				GetColor(255, 255, 255), false);
+		}
+		else {
+			DrawTurnGraph(tx, ty, gr[gr_num].graph, true);
+		}
+		DrawBox(tx + gr[gr_num].box.lx, ty + gr[gr_num].box.hy, tx + gr[gr_num].box.rx, ty + gr[gr_num].box.ly,
+			GetColor(255, 255, 255), false);
+		
 		//敵
 		if (enemy.life > 0) {
-			DrawGraph(enemy.x - enemy.width / 2, enemy.y - enemy.height, enemy.gr, true);
+			etx = enemy.x - enemy.width / 2;
+			ety = enemy.y - enemy.height;
+			DrawGraph(etx, ety, enemy.gr, true);
+			DrawBox(etx + Benemy.lx, ety + Benemy.hy, etx + Benemy.rx, ety + Benemy.ly,
+				GetColor(255, 255, 255), false);
 		}
 		//------------------------------------------------------------------------
+
+		//あたり判定----------------------------------------------------
+		if (enemy.life > 0) {
+			if (etx + Benemy.rx > tx + gr[gr_num].box.lx && etx + Benemy.lx < tx + gr[gr_num].box.rx
+				&&  ety + Benemy.hy < ty + gr[gr_num].box.ly && ety + Benemy.ly > ty + gr[gr_num].box.hy) {
+				enemy.life -= 1;
+				printfDx("OK\n");
+			}
+		}
+		//------------------------------------------------------------
 
 		if (count_fps >= FPS) {
 			++gr_num;
@@ -615,7 +655,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 			//-----------------------------------------------------------------------
 
-			//------------------------------------------------------------
+			
 
 			count_fps = 0;
 		}
@@ -636,7 +676,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		
 	}
-
+	
 	// ＤＸライブラリ使用の終了処理
 	DxLib_End();
 
